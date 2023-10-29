@@ -3,7 +3,7 @@ title: "Progress Memo 1"
 subtitle: |
   | Final Project 
   | Data Science 1 with R (STAT 301-1)
-author: "YOUR NAME"
+author: Jessie Chen
 date: today
 
 format:
@@ -33,7 +33,7 @@ You should make this document your own. This is a template. To help with this we
 
 To link to your github **repo**sitory, appropriately edit the example link below. Meaning replace `https://your-github-repo-url` with your github repo url. Suggest verifying the link works before submitting.
 
-[https://your-github-repo-url](https://your-github-repo-url)
+[My Repo Link](https://github.com/stat301-1-2023-fall/final-project-1-Jchench)
 
 :::
 
@@ -45,11 +45,25 @@ GitHub (free account) cannot store large files. If you try to commit and push a 
 
 ## Data source
 
-Blah blah blah^[where blah blah came from, an example of footnote]
+```{r}
+# Loading data and packages:
+library(tidyverse)
+library(naniar)
+
+spotify_data_1million <- 
+  read_csv("data/spotify_data.csv")
+
+spotify_data_top_streams <- 
+  read_csv("data/ATop 1990-2022.csv")
+```
+
+The first data source that I chose to use for this final project is the dataset that collected about 1 Million tracks with 19 features between the years 2000 and 2023. ^[this data was taken from kaggle](https://www.kaggle.com/datasets/amitanshjoshi/spotify-1million-tracks)
+
+The second data source that I chose to use is "Spotify Top Tracks 1990-2022", which features of all the "Top Hits xxxx"- and "Top Tracks xxxx"-playlists from 1990-2022. ^[this data was taken from kaggle](https://www.kaggle.com/datasets/ztofff/top-1990-2022)
 
 ## Why this data
 
-Blah blah blah^[another footnote]
+I chose to use this data because I think it would be interesting to look at the songs that 
 
 ## Data quality & complexity check
 
