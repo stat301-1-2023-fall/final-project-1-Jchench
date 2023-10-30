@@ -12,20 +12,11 @@ format:
     embed-resources: true
     
 execute:
-  echo: false
+  echo: true
   warning: false
 
 from: markdown+emoji 
 ---
-
-::: {.callout-important}
-## Memo format
-
-Like all other submissions for this course, we expect the memo to be neat and well organized.
-
-You should make this document your own. This is a template. To help with this we have added a date to the yaml above (good whenever writing memos). You should remove this block when making this document your own.
-
-:::
 
 ::: {.callout-tip icon=false}
 
@@ -35,42 +26,70 @@ To link to your github **repo**sitory, appropriately edit the example link below
 
 [My Repo Link](https://github.com/stat301-1-2023-fall/final-project-1-Jchench)
 
-:::
+```{r}
+# Loading packages:
+library(tidyverse)
+library(naniar)
+```
 
-::: {.callout-warning}
-GitHub (free account) cannot store large files. If you try to commit and push a large dataset you will have an ERROR! Any file over 100 MB (100,000 KB) needs to be added to the `.gitignore` file BEFORE committing.
-
-**We may need to do that for files in your final project!**
 :::
 
 ## Data source
 
 ```{r}
-# Loading data and packages:
-library(tidyverse)
-library(naniar)
+# Loading data:
 
 spotify_data_top <- 
   read_csv("data/ATop 1990-2022.csv")
 
 spotify_streams <- 
   read_csv("data/spotify_streams.csv")
+
 ```
 
-The first data set I am using Spotify-made playlists that include between 50-130 tracks of the most popular songs each year from 1990-2022. ^[]
+The `spotify_data_top` dataset I am using collected Spotify-made playlists that include between 50-130 tracks of the most popular songs each year from 1990-2022. There is information on each song's artist, album release date, genre, and other characteristics (i.e. BPM, key, and time signature). [This data was taken from Kaggle, courtesy of user KRISTOFFER.](https://www.kaggle.com/datasets/ztofff/top-1990-2022)
+
+The `spotify_streams` dataset I am using collected data on 10000 Spotify songs and information on their number of streams. [This data was taken from Kaggle, courtesy of user RAKKESH ARAVIND G.](https://www.kaggle.com/datasets/rakkesharv/spotify-top-10000-streamed-songs)
+
+I anticipate joining these data sets together and one way I could match them would be through the song name and artist name variables, which are listed differently in each dataset. Thus, I would have to rename these columns later so that they are consistent.
 
 ## Why this data
 
-I chose to use these datasets because I think it would be interesting to look at the songs that were considered "popular" throughout the years form 1990-2022. The `spotify_data_top` has a lot of interesting information on each individual song (e.g. dancebility, energy, and key), and I think it could be useful to analyze if there are any correlations among these elements and "popularity". The `spotify_streams` dataset provides useful a more concrete measure of "popularity" by collecting the number of streams for each song. Thus, I think it would be helpful to merge these two datasets together to look at the number of streams as an indicator of popularity. 
+I chose to use these datasets because I think it would be interesting to look at the songs that were considered "popular" throughout the years form 1990-2022. The `spotify_data_top` has a lot of comprehensive information on the musical elements of each individual song (e.g. dancebility, genres, time signature, and key), and I think it could be useful to analyze if there are any correlations among these elements and "popularity". The `spotify_streams` dataset provides a more concrete, quantitative measure of "popularity" through collecting the number of streams (or how many times the song is played on the platform) for each song. Thus, I think it would be helpful to merge these two datasets together to look at the number of streams as an indicator of popularity.
 
 ## Data quality & complexity check
 
-The datasets seem to be sufficiently complex. `spotify_data_top` has 2610 rows and 26 variable and `spotify_streams` has 11084 rows and 9 variables.
+**Looking briefly at the data:**
+```{r}
+glimpse(spotify_data_top)
+
+glimpse(spotify_streams)
+```
+
+The datasets seem to be sufficiently complex. `spotify_data_top` has 2610 observations and 26 variables. There are 12 categorical, 12 numeric, and 2 date and time-related variables. `spotify_streams` has 11084 rows and 9 variables. There are 3 categorical and 6 numeric variables. 
+
+**Checking for missingness in `spotify_data_top`:**
+```{r}
+gg_miss_var(spotify_data_top)
+
+miss_var_summary(spotify_data_top) |> 
+  filter(n_miss != 0)
+```
+There don't seem to be too many variables with a large number of missing values. `song` and `artist` don't seem to have missing values, which is good because it will be easier to merge with the second dataset. However, many `genre` values seem to be missing though, which is something to keep in mind.
+
+**Checking for missingness in `spotify_streams`:**
+```{r}
+gg_miss_var(spotify_streams)
+
+miss_var_summary(spotify_streams) |> 
+  filter(n_miss != 0)
+```
+This dataset only has one variable with missing values and it is `Song Name`. Unfortunately, this will make things a little bit more difficult going forwards because it won't be as easy to merge by song and artist name.
 
 ## Potential data issues
 
-Blah blah blah
+One potential issue I'm going to face in terms of merging is having to remove/ work around missing values. Since I'm thinking of merging by song and artist name, it will be a bit hard since a couple of song names in the `spotify_streams` dataset is missing. Another challenge I will face will be regarding the `date` and `time` variables in the `spotify_data_top` dataset. I might have to mutate these rows so that it shows the year, month, day separately. I may also need to find a better way to represent `time` numerically. I also need to rename a lot of the columns because the variable names are not quite clear as to what they're representing. For example, the `time` variable actually represents the length of the song in minutes and seconds. Another issue that that the `spotify_data_top` dataset does not have any information on songs from 2021, ^[the Kaggle user who provided this dataset could not find any information from 2021] which will impact my analysis going forward if I decide to look at songs across time. Overall, the datasets seem relatively clean. 
 
 ## Misc
 
-Blah Blah
+**Potential timeline:** I'm hoping to have my data fully cleaned by the end of next week so I can start doing some initial exploration.
