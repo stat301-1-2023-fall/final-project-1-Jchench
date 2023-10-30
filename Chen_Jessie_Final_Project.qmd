@@ -50,24 +50,22 @@ GitHub (free account) cannot store large files. If you try to commit and push a 
 library(tidyverse)
 library(naniar)
 
-spotify_data_1million <- 
-  read_csv("data/spotify_data.csv")
-
-spotify_data_top_streams <- 
+spotify_data_top <- 
   read_csv("data/ATop 1990-2022.csv")
+
+spotify_streams <- 
+  read_csv("data/spotify_streams.csv")
 ```
 
-The first data source that I chose to use for this final project is the dataset that collected about 1 Million tracks with 19 features between the years 2000 and 2023. ^[this data was taken from kaggle](https://www.kaggle.com/datasets/amitanshjoshi/spotify-1million-tracks)
-
-The second data source that I chose to use is "Spotify Top Tracks 1990-2022", which features of all the "Top Hits xxxx"- and "Top Tracks xxxx"-playlists from 1990-2022. ^[this data was taken from kaggle](https://www.kaggle.com/datasets/ztofff/top-1990-2022)
+The first data set I am using Spotify-made playlists that include between 50-130 tracks of the most popular songs each year from 1990-2022. ^[]
 
 ## Why this data
 
-I chose to use this data because I think it would be interesting to look at the songs that 
+I chose to use these datasets because I think it would be interesting to look at the songs that were considered "popular" throughout the years form 1990-2022. The `spotify_data_top` has a lot of interesting information on each individual song (e.g. dancebility, energy, and key), and I think it could be useful to analyze if there are any correlations among these elements and "popularity". The `spotify_streams` dataset provides useful a more concrete measure of "popularity" by collecting the number of streams for each song. Thus, I think it would be helpful to merge these two datasets together to look at the number of streams as an indicator of popularity. 
 
 ## Data quality & complexity check
 
-Blah blah blah
+The datasets seem to be sufficiently complex. `spotify_data_top` has 2610 rows and 26 variable and `spotify_streams` has 11084 rows and 9 variables.
 
 ## Potential data issues
 
