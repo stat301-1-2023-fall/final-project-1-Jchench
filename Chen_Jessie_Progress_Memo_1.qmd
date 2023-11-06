@@ -38,10 +38,10 @@ library(naniar)
 # Loading data:
 
 spotify_data_top <- 
-  read_csv("data/ATop 1990-2022.csv")
+  read_csv("data/raw/ATop 1990-2022.csv")
 
 spotify_streams <- 
-  read_csv("data/spotify_streams.csv")
+  read_csv("data/raw/spotify_streams.csv")
 
 ```
 
