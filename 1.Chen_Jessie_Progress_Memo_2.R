@@ -41,12 +41,36 @@ gg_miss_var(spotify_merged)
 
 # EDA:
 
-spotify_merged |> 
-  ggplot(aes(x = final_streams)) +
-  geom_histogram()
+# corrplot:
 
-spotify_merged |> 
-  ggplot(aes(x = dance)) +
-  geom_histogram()
-  
-  
+spotify_merged_numeric <- 
+  spotify_merged |> 
+  select(where(is.numeric))
+
+spotify_merged_corr <- 
+  spotify_merged_numeric |> 
+  cor(use = "pairwise.complete.obs") |> 
+  ggcorrplot::ggcorrplot()
+
+spotify_merged_corr
+
+spotify_merged_streams_corr <- 
+  spotify_merged_numeric |> 
+  cor(use = "pairwise.complete.obs") |> 
+  as_tibble() |> 
+  select(final_streams) |> 
+  mutate(var = colnames(spotify_merged_numeric), .before = final_streams)
+
+# categorical data analysis
+time_signature <- 
+  spotify_merged |> 
+  summarize(num_distinct_time_signature = n_distinct(time_signature))
+
+# clearer genres
+spotify_pivot_genre <- 
+  spotify_merged |> 
+  mutate(primary_genre = str_extract(parent_genres, "[A-Z][a-z]+"))
+
+spotify_pivot_genre_count <- 
+  spotify_pivot_genre |> 
+  summarize(num_distinct = n_distinct(primary_genre))
