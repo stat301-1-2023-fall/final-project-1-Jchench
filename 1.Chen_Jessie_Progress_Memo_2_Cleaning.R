@@ -100,7 +100,8 @@ spotify_merged <-
     primary_genre = str_extract(parent_genres, "[A-Z][a-z]+"),
     album_date = as.Date(album_date),
     year = year(album_date),
-    song_seconds = period_to_seconds(hms(time))/60
+    song_seconds = period_to_seconds(hms(time))/60,
+    time_signature = as.character(time_signature)
   )
 
 write_rds(spotify_merged, "data/spotify_data_cleaned")

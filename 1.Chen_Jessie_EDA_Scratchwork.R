@@ -51,20 +51,21 @@ spotify_data_numeric |>
 
 spotify_data_select <- 
   spotify_data |> 
-  select(c(year, dance, loud, primary_genre, key, time_signature, song_seconds))
+  select(c(final_streams, year, dance, loud, primary_genre, key, time_signature, song_seconds))
 
 for(var in colnames(spotify_data_select)){
   
   if (is.numeric(spotify_data_select[[var]])){
     plot <- spotify_data_select |> 
       ggplot(aes(x = !!sym(var))) +
-      geom_boxplot() +
+      geom_histogram() +
       xlab(var)
   } else {
     plot <- spotify_data_select |> 
       ggplot(aes(x = !!sym(var))) +
       geom_bar() +
-      xlab(var)
+      xlab(var) +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
   }
   
   ggsave(str_c("plots/", var, ".png"))
