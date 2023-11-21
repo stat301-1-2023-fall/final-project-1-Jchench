@@ -12,34 +12,29 @@ format:
     embed-resources: true
     
 execute:
-  echo: true
+  echo: false
   warning: false
 
 from: markdown+emoji 
 ---
 
-::: {.callout-tip icon=false}
-
+::: {.callout-tip icon="false"}
 ## Github Repo Link
 
 [My Repo Link](https://github.com/stat301-1-2023-fall/final-project-1-Jchench)
-
 :::
 
-Basic objectives
-Objective 1
-Students are expected to setup their own qmd file to render to an html for this project. The document should be appropriately formatted (see previous memo and other assignments). Should have a title, author, date, and appropriate headers, and sub-headers.
+**Preliminary Data Cleaning**
 
-Objective 2
-Students are expected to demonstrate that significant progress has been made on their final project since the submission of progress memo 1. Students should have their data cleaned and the EDA should be started.
+I had to do quite a bit of data cleaning because I planned on joining two datasets together so I could see the spotify stream count for each song. For this, I initially wanted to match by the song title for each dataset, however, I noticed that a lot of songs had the same names so this wouldn't be a unique key. Instead, I ended up grouping the merged dataset by song title and artist name and summing the streams to get the variable `final_streams`. Next, I did some variable type conversion so that the dataset would be easier to work with. I converted the song length (`time`) to seconds so that it would be easier to deal with numerically. I extracted a `primary_genre` out of the `parent_genres` to make this column appear simpler. I also extracted the song release year out of `album_date` so that it would be easier to make comparisons over time.
+```{r}
+spotify_data <- read_rds("data/spotify_data_cleaned")
+```
 
-Demonstrating significant progress means students should have some univariate and bivariate analyses complete for several of their variables.  They should share a few graphics and/or tables with a description of what they have found thus far to demonstrate they progress. Students should should clearly state what they are exploring and why in these demonstrations. That is, they should share the guiding curiosity or research question that accompanies the particular graphics and/or tables they choose to share. 
+**Initial Analysis**
 
-What else should be in the memo
-Students should summarize their progress, where they are at, and what their next steps will be. Self assessment of progress would also be appropriate. When thinking or describing next steps students should share any guiding curiosities or research questions they plan to explore.
+Demonstrating significant progress means students should have some univariate and bivariate analyses complete for several of their variables. They should share a few graphics and/or tables with a description of what they have found thus far to demonstrate they progress. Students should should clearly state what they are exploring and why in these demonstrations. That is, they should share the guiding curiosity or research question that accompanies the particular graphics and/or tables they choose to share.
 
-Misc Notes/Comments
-Final GitHub repo link should be at the top in a callout block --- similar to all other assignments
-There should be no code visible or accessible in memo. 
-There should be no raw R output like tibbles/data frames. Use html tables.
-In rare cases where the the project is extremely heavy on advanced data collection, progress will look quite different. Projects like this will be focused on showing progress on getting the data together and collected. If your project falls in this category, then discuss this with your instructor --- very few, if any projects, fall into this rare case.
+What else should be in the memo Students should summarize their progress, where they are at, and what their next steps will be. Self assessment of progress would also be appropriate. When thinking or describing next steps students should share any guiding curiosities or research questions they plan to explore.
+
+Misc Notes/Comments Final GitHub repo link should be at the top in a callout block --- similar to all other assignments There should be no code visible or accessible in memo. There should be no raw R output like tibbles/data frames. Use html tables. In rare cases where the the project is extremely heavy on advanced data collection, progress will look quite different. Projects like this will be focused on showing progress on getting the data together and collected. If your project falls in this category, then discuss this with your instructor --- very few, if any projects, fall into this rare case.
