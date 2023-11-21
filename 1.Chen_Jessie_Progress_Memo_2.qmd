@@ -26,13 +26,76 @@ from: markdown+emoji
 
 **Preliminary Data Cleaning**
 
-I had to do quite a bit of data cleaning because I planned on joining two datasets together so I could see the spotify stream count for each song. For this, I initially wanted to match by the song title for each dataset, however, I noticed that a lot of songs had the same names so this wouldn't be a unique key. Instead, I ended up grouping the merged dataset by song title and artist name and summing the streams to get the variable `final_streams`. Next, I did some variable type conversion so that the dataset would be easier to work with. I converted the song length (`time`) to seconds so that it would be easier to deal with numerically. I extracted a `primary_genre` out of the `parent_genres` to make this column appear simpler. I also extracted the song release year out of `album_date` so that it would be easier to make comparisons over time.
+For this project, I'm looking at data on songs from the music streaming platform Spotify. I wanted to see if there are any inferences I could made in terms of musical characteristics and popularity, as well as explore if these elements have changed over time.
+
+I had to do quite a bit of data cleaning because I planned on joining two datasets together so I could see the Spotify stream count for each song. For this, I initially wanted to match by the song title for each dataset, however, I noticed that a lot of songs had the same names so this wouldn't be a unique key. Instead, I ended up grouping the merged dataset by song title and artist name and summing the streams to get the variable `final_streams`. Next, I did some variable type conversion so that the dataset would be easier to work with. I converted the song length (`time`) to seconds so that it would be easier to deal with numerically. I extracted a `primary_genre` out of the `parent_genres` to make this column appear simpler. I also extracted the song release year out of `album_date` so that it would be easier to make comparisons over time.
 ```{r}
 spotify_data <- read_rds("data/spotify_data_cleaned")
 ```
 
 **Initial Analysis**
 
+One variable I was particularly interested in looking at was `final_streams` as an indication of how many users listened to a song/ how popular it is. I wanted to see if there were any features that would make a song more/ less popular so I looked at correlation coefficients:
+
+```{r}
+spotify_numeric <- 
+  spotify_data |> 
+  select(where(is.numeric))
+
+spotify_numeric |> 
+  cor(use = "pairwise.complete.obs") |> 
+  as_tibble() |> 
+  select(final_streams) |> 
+  mutate(variables = colnames(spotify_numeric), .before = final_streams) |> 
+  arrange(desc(final_streams)) |> 
+  DT::datatable() |> 
+  DT::formatRound(2:2, digits = 2)
+```
+As we can see, there aren't many numeric variables that have a significantly strong correlation with Spotify streams. It seems like the three variables that have the highest correlation coefficient with `final_streams` is `year` (year the song was released), `dance` (measure of danceability), and `loud` (loudness of the song). I personally think that the relationship between `final_streams` and `year` might have a lot of confounding variables since this factors isn't inherently a musical element. For example, the year a song was released might have positive relationship with its number of streams because the app is gaining more users every year (and thus, more recent songs will have more people listening to them).
+
+I also think that `year` could be a variable that warrants more exploration because I'm curious to see what features of popular songs have changed over time.
+```{r}
+spotify_data_numeric |> 
+  cor(use = "pairwise.complete.obs") |> 
+  as_tibble() |> 
+  select(year) |> 
+  mutate(variable = colnames(spotify_data_numeric), .before = year) |> 
+  arrange(desc(year)) |> 
+  DT::datatable() |> 
+  DT::formatRound(2:2, digits = 3)
+```
+According to this table, I think the other numeric variable that would be worth looking at other than the aforementioned three from the previous exploration would be `song_seconds` as there seems to be a pretty strong negative correlation.
+
+In terms of categorical variables, I think the ones that are most interesting to look at would be genre, key, and time signature. Moving forwards, we should look at `year`, `dance`, `loud`, `primary_genre`, `key`, `time_signature`, and `song_seconds`. We can take a closer look at these variables in the univariate and bivariate analyses.
+
+**Univariate Analysis**
+```{r}
+spotify_data_select <- 
+  spotify_data |> 
+  select(c(year, dance, loud, primary_genre, key, time_signature, song_seconds))
+
+for(var in colnames(spotify_data_select)){
+  
+  if (is.numeric(spotify_data_select[[var]])){
+    plot <- spotify_data_select |> 
+      ggplot(aes(x = !!sym(var))) +
+      geom_boxplot() +
+      xlab(var)
+  } else {
+    plot <- spotify_data_select |> 
+      ggplot(aes(x = !!sym(var))) +
+      geom_bar() +
+      xlab(var)
+  }
+  
+  ggsave(str_c("plots/", var, ".png"))
+}
+```
+
+
+**Bivariate Analysis**
+
+**Next Steps**
 Demonstrating significant progress means students should have some univariate and bivariate analyses complete for several of their variables. They should share a few graphics and/or tables with a description of what they have found thus far to demonstrate they progress. Students should should clearly state what they are exploring and why in these demonstrations. That is, they should share the guiding curiosity or research question that accompanies the particular graphics and/or tables they choose to share.
 
 What else should be in the memo Students should summarize their progress, where they are at, and what their next steps will be. Self assessment of progress would also be appropriate. When thinking or describing next steps students should share any guiding curiosities or research questions they plan to explore.

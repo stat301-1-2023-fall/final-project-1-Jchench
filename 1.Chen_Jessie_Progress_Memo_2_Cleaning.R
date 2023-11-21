@@ -61,19 +61,6 @@ spotify_merged_years_1 <-
 spotify_merged_years_1 |> 
   ggplot(aes(x = year, y = mean_dance)) +
   geom_point()
-
-# changes throughout years
-
-spotify_merged_years_numeric <- 
-  spotify_merged_years |> 
-  select(where(is.numeric))
-
-spotify_merged_years_numeric |> 
-  cor(use = "pairwise.complete.obs") |> 
-  as_tibble() |> 
-  select(year) |> 
-  mutate(var = colnames(spotify_merged_years_numeric), .before = year) |> 
-  knitr::kable()
   
 # convert song length to numeric variable (so it is easier to work with)
 
@@ -103,7 +90,8 @@ spotify_merged <-
   mutate(final_streams = sum(total_streams)) |> 
   drop_na() |> 
   ungroup() |> 
-  select(-total_streams, -spotify_track_img, -spotify_track_id, -song_preview) |> 
+  select(-total_streams, -spotify_track_img, -spotify_track_id, -song_preview, 
+         -popularity, -number) |> 
   distinct(song_name, artist_name, .keep_all = TRUE)
 
 spotify_merged <- 
