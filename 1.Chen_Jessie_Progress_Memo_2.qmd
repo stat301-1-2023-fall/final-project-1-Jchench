@@ -125,11 +125,13 @@ Next, let's look at the plot for `song_seconds`:
 Lastly, let's look at `time_signature`:
 
 ![This barchart indicates that most songs tend to be in 4/4 time.](plots/time_signature.png)
-After this analysis, I think that the variables I could conduct a bivariate analysis on to 
+**Conclusions and steps to take moving forwards:**
+
+I think that the variables I could conduct a bivariate analysis on with `final_streams` would be `dance`, `loudness`, `song_seconds`, and `key`. I think `primary_genre` and `time_signature` could be interesting variables to facet by but I don't think doing a bivariate analysis would be as helpful since the distribution of values for these variables is quite uneven.
 
 ## Bivariate Analysis
 
-In terms of the bivariate analysis, I think I'll first focus on variables related to `final_streams` to see if there are any meaningful relationship. Then, I'll look at whether these variables are characterized by evident trends throughout the years.
+In terms of the bivariate analysis, I think I'll first focus on variables related to `final_streams` to see if there are any meaningful relationship.
 
 **Scatterplot analysis:**
 First, let's plot the relationship between `final_streams` and `dance`:
@@ -168,6 +170,18 @@ spotify_data |>
 ```
 We can also see here that there is a relatively weak negative correlation between the total number of Spotify streams for a song and its duration. This means that songs that are shorter tend to be played somewhat more often by Spotify users.
 
+If we recall from the initial analysis, it seems that song duration was also pretty strongly correlated with the `year` variable. So, I'll plot these two variables as well to see if they are related:
+```{r}
+spotify_data |> 
+  ggplot(aes(x = year, y = song_seconds)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Song Duration Throughout the Years",
+       x = "year",
+       y = "song duration (measured in seconds)")
+```
+As shown in the plot above, it looks like song duration is also negatively correlated with year. This is quite interesting because it could also show a shift in song preference trends over time.
+
 **Categorical variable plots:**
 
 Let's look at `key`:
@@ -175,11 +189,13 @@ Let's look at `key`:
 spotify_data |> 
   ggplot(aes(x = key, y = final_streams)) +
   geom_boxplot() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs("Total Number of Spotify Streams vs. Song Key",
+       x = "key",
+       y = "total streams")
 ```
+It looks like songs that are in the A#/Bb minor and G minor keys have the highest mean number of total streams. Songs in the A minor and D#/Eb major have the lowest mean number of total streams. Songs in the F#/Gb minor key seem to have the widest range and interquartile range. Songs in D#/Eb major also have the smallest range.
+
 ## Next Steps
-Demonstrating significant progress means students should have some univariate and bivariate analyses complete for several of their variables. They should share a few graphics and/or tables with a description of what they have found thus far to demonstrate they progress. Students should should clearly state what they are exploring and why in these demonstrations. That is, they should share the guiding curiosity or research question that accompanies the particular graphics and/or tables they choose to share.
 
-What else should be in the memo Students should summarize their progress, where they are at, and what their next steps will be. Self assessment of progress would also be appropriate. When thinking or describing next steps students should share any guiding curiosities or research questions they plan to explore.
-
-Misc Notes/Comments Final GitHub repo link should be at the top in a callout block --- similar to all other assignments There should be no code visible or accessible in memo. There should be no raw R output like tibbles/data frames. Use html tables. In rare cases where the the project is extremely heavy on advanced data collection, progress will look quite different. Projects like this will be focused on showing progress on getting the data together and collected. If your project falls in this category, then discuss this with your instructor --- very few, if any projects, fall into this rare case.
+I think the next step would be to look at multivariate analyses of these variables faceted by genre and time signature. I think it would also be meaningful to cut the `year` variable into intervals and facet by this measure to see if there are any changes or additional insights that could be drawn.
