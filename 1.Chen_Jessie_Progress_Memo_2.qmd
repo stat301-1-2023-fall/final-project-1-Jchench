@@ -24,19 +24,19 @@ from: markdown+emoji
 [My Repo Link](https://github.com/stat301-1-2023-fall/final-project-1-Jchench)
 :::
 
-**Preliminary Data Cleaning**
+## Preliminary Data Cleaning
 
 For this project, I'm looking at data on songs from the music streaming platform Spotify. I wanted to see if there are any inferences I could made in terms of musical characteristics and popularity, as well as explore if these elements have changed over time.
 
-I had to do quite a bit of data cleaning because I planned on joining two datasets together so I could see the Spotify stream count for each song. For this, I initially wanted to match by the song title for each dataset, however, I noticed that a lot of songs had the same names so this wouldn't be a unique key. Instead, I ended up grouping the merged dataset by song title and artist name and summing the streams to get the variable `final_streams`. Next, I did some variable type conversion so that the dataset would be easier to work with. I converted the song length (`time`) to seconds so that it would be easier to deal with numerically. I extracted a `primary_genre` out of the `parent_genres` to make this column appear simpler. I also extracted the song release year out of `album_date` so that it would be easier to make comparisons over time.
+I had to do quite a bit of data cleaning because I planned on joining two datasets together so I could see the Spotify stream count for each song. For this, I initially wanted to match by the song title for each dataset, however, I noticed that a lot of songs had the same names so this wouldn't be a unique key. Instead, I ended up grouping the merged dataset by song title and artist name and summing the streams to get the variable `final_streams`, which more accurately represented the total number of streams for a song. Next, I did some variable type conversion so that the dataset would be easier to work with. I converted the song length (`time`) to seconds so that it would be easier to deal with numerically. I extracted a `primary_genre` out of the `parent_genres` to make this column appear simpler. I also extracted the song release year out of `album_date` so that it would be easier to make comparisons over time.
 ```{r}
 library(tidyverse)
 spotify_data <- read_rds("data/spotify_data_cleaned")
 ```
 
-**Initial Analysis**
+## Initial Analysis
 
-One variable I was particularly interested in looking at was `final_streams` as an indication of how many users listened to a song/ how popular it is. I wanted to see if there were any features that would make a song more/ less popular so I looked at correlation coefficients:
+One variable I was particularly interested in looking at was `final_streams` as an indication popularity because it measures how many times a song is played by users of Spotify. I wanted to see if there were any features that would make a song more/ less popular so I looked at correlation coefficients:
 
 ```{r}
 spotify_numeric <- 
@@ -54,7 +54,7 @@ spotify_numeric |>
 ```
 As we can see, there aren't many numeric variables that have a significantly strong correlation with Spotify streams. It seems like the three variables that have the highest correlation coefficient with `final_streams` is `year` (year the song was released), `dance` (measure of danceability), and `loud` (loudness of the song). I personally think that the relationship between `final_streams` and `year` might have a lot of confounding variables since this factors isn't inherently a musical element. For example, the year a song was released might have positive relationship with its number of streams because the app is gaining more users every year (and thus, more recent songs will have more people listening to them).
 
-I also think that `year` could be a variable that warrants more exploration because I'm curious to see what features of popular songs have changed over time.
+I also think that `year` could be a variable that warrants more exploration because I'm curious to see what features of popular songs have changed over time. Thus, I also looked at the correlation coefficients for `year`:
 ```{r}
 spotify_numeric |> 
   cor(use = "pairwise.complete.obs") |> 
@@ -69,7 +69,7 @@ According to this table, I think the other numeric variable that would be worth 
 
 In terms of categorical variables, I think the ones that are most interesting to look at would be genre, key, and time signature. Moving forwards, we should look at the distribution of `final_streams`, `year`, `dance`, `loud`, `primary_genre`, `key`, `time_signature`, and `song_seconds`. We can take a closer look at these variables in the univariate and bivariate analyses.
 
-**Univariate Analysis**
+## Univariate Analysis
 ```{r}
 spotify_data_select <- 
   spotify_data |> 
@@ -100,23 +100,23 @@ First, let's look at `final_streams`:
 
 Next, let's look at `year`:
 
-![The histogram distirbution is left skewed here and it seems like there are a lot of songs 2014, 2016, and 2017.](plots/year.png)
+![The histogram distirbution is left skewed here and it seems like there are a lot of songs in this dataset from 2014, 2016, and 2017.](plots/year.png)
 
 Next, let's looks at `dance`:
 
-![This histogram seems to have more or less a unimodal normal distribution with the exception of a couple outliers below 25.](plots/dance.png)
+![Dancebility here is measure in a percentage value for how "danceable" a song is. This histogram seems to have more or less a unimodal normal distribution with the exception of a couple outliers below 25 percent.](plots/dance.png)
 
 Here's the plot for `key`:
 
-![This barchart indicates that](plots/key.png)
+![This barchart indicates that most songs tend to be in C#/Db major.](plots/key.png)
 
 Next, let's look at `loud`:
 
-![There are quite a few significant breaks in between the distirbution, but it looks left skewed and relatively unimodal.](plots/loud.png)
+![Loudness is measured in terms of the average decibles for a song. There are quite a few significant breaks in between the distirbution, but it looks left skewed and relatively unimodal.](plots/loud.png)
 
 Here's the plot for `primary_genre`:
 
-![This barchart indicates that](plots/primary_genre.png)
+![This barchart indicates that most songs tend to be in the pop genre](plots/primary_genre.png)
 
 Next, let's look at the plot for `song_seconds`:
 
@@ -124,12 +124,60 @@ Next, let's look at the plot for `song_seconds`:
 
 Lastly, let's look at `time_signature`:
 
-![This barchart indicates that](plots/time_signature.png)
+![This barchart indicates that most songs tend to be in 4/4 time.](plots/time_signature.png)
+After this analysis, I think that the variables I could conduct a bivariate analysis on to 
 
+## Bivariate Analysis
 
-**Bivariate Analysis**
+In terms of the bivariate analysis, I think I'll first focus on variables related to `final_streams` to see if there are any meaningful relationship. Then, I'll look at whether these variables are characterized by evident trends throughout the years.
 
-**Next Steps**
+**Scatterplot analysis:**
+First, let's plot the relationship between `final_streams` and `dance`:
+```{r}
+spotify_data |> 
+  ggplot(aes(x = dance, y = final_streams)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Total Number of Spotify Streams vs. Danceability",
+       x = "dancebility (measured in %)",
+       y = "total streams")
+```
+We can see here that there is a relatively weak positive correlation between the total number of Spotify streams for a song and its danceability. This means that songs that are more "danceable" tend to be played somewhat more often by Spotify users.
+
+Next, we can look at the relationship between `final_streams` and `loud`:
+```{r}
+spotify_data |> 
+  ggplot(aes(x = loud, y = final_streams)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Total Number of Spotify Streams vs. Loudness",
+       x = "loudness (measured in decibles)",
+       y = "total streams")
+```
+We can also see here that there is a relatively weak positive correlation between the total number of Spotify streams for a song and its loudness. This means that songs that are louder tend to be played somewhat more often by Spotify users.
+
+Finally, let's look at `song_seconds`:
+```{r}
+spotify_data |> 
+  ggplot(aes(x = song_seconds, y = final_streams)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Total Number of Spotify Streams vs. Song Duration",
+       x = "song duration (measured in seconds)",
+       y = "total streams")
+```
+We can also see here that there is a relatively weak negative correlation between the total number of Spotify streams for a song and its duration. This means that songs that are shorter tend to be played somewhat more often by Spotify users.
+
+**Categorical variable plots:**
+
+Let's look at `key`:
+```{r}
+spotify_data |> 
+  ggplot(aes(x = key, y = final_streams)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+## Next Steps
 Demonstrating significant progress means students should have some univariate and bivariate analyses complete for several of their variables. They should share a few graphics and/or tables with a description of what they have found thus far to demonstrate they progress. Students should should clearly state what they are exploring and why in these demonstrations. That is, they should share the guiding curiosity or research question that accompanies the particular graphics and/or tables they choose to share.
 
 What else should be in the memo Students should summarize their progress, where they are at, and what their next steps will be. Self assessment of progress would also be appropriate. When thinking or describing next steps students should share any guiding curiosities or research questions they plan to explore.
