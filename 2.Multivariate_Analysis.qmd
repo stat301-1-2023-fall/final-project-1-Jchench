@@ -1,0 +1,51 @@
+---
+title: "Multivariate Analysis"
+subtitle: |
+  | Final Project 
+  | Data Science 1 with R (STAT 301-1)
+author: Jessie Chen
+date: today
+
+format:
+  html:
+    toc: true
+    embed-resources: true
+    
+execute:
+  echo: false
+  warning: false
+
+from: markdown+emoji 
+---
+
+::: {.callout-tip icon="false"}
+## Github Repo Link
+
+[My Repo Link](https://github.com/stat301-1-2023-fall/final-project-1-Jchench)
+:::
+
+```{r}
+# loading dataset:
+library(tidyverse)
+spotify_data <- read_rds("data/spotify_data_cleaned")
+```
+
+As identified in progress memo 2, I'm going to look at a multivariate analysis between `final_streams`, `year`, `dance`, `loud`, `primary_genre`, `key`, and `song_seconds`. I actually don't think `time_signature` would be worthwhile to look at since most songs seem to be in 4/4 so the sample size for the other two time signatures would be way too small to draw any accurate conclusions.
+
+Let's look at dancebility first:
+```{r}
+# final streams and dance:
+
+spotify_data |> 
+  filter(!is.na(primary_genre)) |> 
+  ggplot(aes(x = dance, y = final_streams)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  facet_wrap(~ primary_genre, scales = "free")
+```
+
+
+
+
+
+

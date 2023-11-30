@@ -97,7 +97,7 @@ spotify_merged <-
 spotify_merged <- 
   spotify_merged |> 
   mutate(
-    primary_genre = str_extract(parent_genres, "[A-Z][a-z]+"),
+    primary_genre = str_extract(parent_genres, "[A-Z][a-z]+[ ]*[A-Z]*[a-z]*"),
     album_date = as.Date(album_date),
     year = year(album_date),
     song_seconds = period_to_seconds(hms(time))/60,
