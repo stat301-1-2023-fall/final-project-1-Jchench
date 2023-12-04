@@ -43,9 +43,35 @@ spotify_data |>
   geom_smooth(method = "lm") +
   facet_wrap(~ primary_genre, scales = "free")
 ```
+The relationship between danceability and total number of streams changes when we look at different genres. For Metal, country, folk, easy listening, and electronic, the relationship is negative, whereas for the other genres, the relationship is positive.
 
+```{r}
+spotify_data |> 
+  ggplot(aes(x = dance, y = final_streams)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  facet_wrap(~ time_signature, scales = "free")
+```
+The multivariate analysis between key, dance, and final_streams shows that the relationship between danceability and total number of streams is positive throughout each of the time signatures. I don't think this would be a very interesting finding to explicitly bring up in the report though.
 
+```{r}
+spotify_data |> 
+  filter(!is.na(primary_genre)) |> 
+  ggplot(aes(x = loud, y = final_streams)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm") +
+  facet_wrap(~ primary_genre, scales = "free")
+```
 
+Similarly for loudness and the number of total streams, the relationship differs by genre. For the Latin genre, the relationship is negative, while it is positive for all the other genres.
 
-
-
+```{r}
+spotify_data |> 
+  filter(!is.na(primary_genre)) |> 
+  ggplot(aes(x = primary_genre)) +
+  geom_bar(aes(fill = major_minor)) +
+  facet_wrap(~ stream_breaks, scales = "free") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(fill = "Major or Minor", title = "Distribution ")
+```
+In terms of genres and key signature, we can see that there is a slight change across the number of total streams. It looks like songs that have <1 billion streams are mostly in the Hip Hop and Pop genre and mainly in Minor keys.

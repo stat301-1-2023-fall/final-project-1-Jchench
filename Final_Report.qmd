@@ -17,13 +17,37 @@ execute:
 
 from: markdown+emoji 
 ---
-Introduction
+
+::: {.callout-tip icon=false}
+
+## Github Repo Link
+
+[My Repo Link](https://github.com/stat301-1-2023-fall/final-project-1-Jchench)
+
+```{r}
+# Loading packages:
+library(tidyverse)
+library(naniar)
+```
+
+:::
+
+**Introduction**
 Overview of the EDA. What was the motivation for this analysis? What initial curiosities or research questions motivated you? Describe the data source(s) you will use to build a predictive model. If you are obtaining information from websites you should cite those in your References.
 
-Data overview & quality
+I'm interested in looking at data on music to determine what musical elements make songs more popular and how these elements have changed over time. For this project, I gathered data from the music streaming-platform Spotify to look at some of the most popular songs among users and particular elements that might have made those songs popular. Some of the initial research questions I have are: What are the musical elements that make a song popular among listeners? Are there any patterns in changes and trends in these musical elements over the years?
+
+The `spotify_data_top` dataset I am using collected Spotify-made playlists that include between 50-130 tracks of the most popular songs each year from 1990-2022. There is information on each song's artist, album release date, genre, and other characteristics (i.e. BPM, key, and time signature). [This data was taken from Kaggle, courtesy of user KRISTOFFER.](https://www.kaggle.com/datasets/ztofff/top-1990-2022) The `spotify_streams` dataset I am using collected data on 10000 Spotify songs and information on their number of streams. [This data was taken from Kaggle, courtesy of user RAKKESH ARAVIND G.](https://www.kaggle.com/datasets/rakkesharv/spotify-top-10000-streamed-songs)
+
+
+##**Data overview & quality**
 A concise high level overview of the dataset(s) being explored. Description of the dataset(s) that covers basics: size, number of observations, number, of variables, variable types, and discussion of any quality issues (especially missingness and how it may impact the analysis). Highlight any important data collection issues or concerns. If over-technical, but important, then place technical details in Appendix: technical info.
 
-Explorations
+`spotify_data_top` has 2610 observations and 26 variables. There are 12 categorical, 12 numeric, and 2 date and time-related variables. `spotify_streams` has 11084 rows and 9 variables. There are 3 categorical and 6 numeric variables.
+
+In terms of potential issues, both the datasets doesn't seem to have too many variables with a large number of missing values. However, many `genre` values seem to be missing though, which is something to keep in mind. The biggest issue that I ran into when trying to join the two datasets was in regards to the keys that I decided to join by. I wanted to join the two data sets by artist and song names, however, this became hard to do because the datasets seemed to have multiple versions of the same songs by the same artists ^[].
+
+##**Explorations**
 This is the heart or main body of the the report. The structure of this portion can look VERY different depending on narrative choices and organization choices made to guide readers through the project EDA. Could decide to make sections for major parts of the EDA and not used an Explorations header. The key is that you have sections that are clearly organized and guide the reader through a systematic and thoughtful exploration of the dataset(s).
 
 A thoughtful exploration weaves together prose, figures, and tables to help a reader build understanding. It is a guided tour that should have clear motivations for each step in the process (think guiding curiosities or research questions). It should be clear how things build of of each other and why we are looking at what is being presented. Should also be letting the reader know whether what is shown is as expected or is it surprising (maybe some of each).

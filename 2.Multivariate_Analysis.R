@@ -62,16 +62,31 @@ spotify_data |>
 
 # Key and genres:
 spotify_data |> 
+  filter(!is.na(primary_genre)) |> 
   ggplot(aes(x = stream_breaks)) +
   geom_bar(aes(fill = major_minor)) +
   facet_wrap(~ primary_genre) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 spotify_data |> 
+  filter(!is.na(primary_genre)) |> 
   ggplot(aes(x = major_minor)) +
   geom_bar(aes(fill = primary_genre)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  facet_wrap(~ stream_breaks)
+  facet_wrap(~ stream_breaks, scales = "free")
 
+spotify_data |> 
+  filter(!is.na(primary_genre)) |> 
+  ggplot(aes(x = primary_genre)) +
+  geom_bar(aes(fill = major_minor)) +
+  facet_wrap(~ stream_breaks, scales = "free") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# things across time
+
+spotify_data |> 
+  ggplot(aes(x = year, y = song_seconds, color = dance)) +
+  geom_point(alpha = 0.75) +
+  geom_smooth(method = "lm")
 
 
