@@ -43,7 +43,7 @@ The `spotify_data_top` dataset I am using collected Spotify-made playlists that 
 
 `spotify_data_top` has 2610 observations and 26 variables. There are 12 categorical, 12 numeric, and 2 date and time-related variables. `spotify_streams` has 11084 rows and 9 variables. There are 3 categorical and 6 numeric variables.
 
-In terms of potential issues, both the datasets doesn't seem to have too many variables with a large number of missing values. However, many `genre` values seem to be missing though, which is something to keep in mind. The biggest issue that I ran into when trying to join the two datasets was in regards to the keys that I decided to join by. I wanted to join the two data sets by artist and song names, however, this became hard to do because the datasets seemed to have multiple versions of the same songs by the same artists. I was able to overcome this issue by filtering for distinct values and summing the total number of streams.
+In terms of potential issues, both the datasets doesn't seem to have too many variables with a large number of missing values. However, many `genre` values seem to be missing though, which is something to keep in mind. The biggest issue that I ran into when trying to join the two datasets was in regards to the keys that I decided to join by. I wanted to join the two data sets by artist and song names, however, this became hard to do because the datasets seemed to have multiple versions of the same songs by the same artists. I was able to overcome this issue by filtering for distinct values and summing the total number of streams. In my data cleaning, I also did a couple of variable conversions so that the dataset would be easier to work with.
 
 ##Explorations
 
@@ -60,9 +60,30 @@ spotify_data |>
        y = NULL) +
   scale_x_continuous(labels = scales::label_number())
 ```
-As we can see here, the distribution of the total number of streams is unimodal and significantly skewed to the right, meaning that most of the songs in this dataset have less than 100 million total streams.
+As we can see here, the distribution of the total number of streams is unimodal and significantly skewed to the right, meaning that most of the songs in this dataset have less than 100 million total streams. There seem to be a lot of outliers after 400 million total streams so we may want to just ignore these values for the next couple of explorations.
 
-To begin with I looked at the correlation coefficient between all the numeric variables and the total number of streams, which showed that the "danceability" of a song (represented in percentage) is the most correlated with total stream numbers (correlation coefficient of 0.31). Thus, I decide to looks more closely at this variable through a univariate analysis:
+**Looking at the most important numeric variable:**
+
+To begin with I looked at the correlation coefficient between all the numeric variables and the total number of streams:
+
+```{r}
+spotify_numeric <- 
+  spotify_data |> 
+  select(where(is.numeric))
+
+spotify_numeric |> 
+  cor(use = "pairwise.complete.obs") |> 
+  as_tibble() |> 
+  select(final_streams) |> 
+  mutate(variables = colnames(spotify_numeric), .before = final_streams) |> 
+  arrange(desc(final_streams)) |> 
+  knitr::kable(digits = 2,
+               col.names = c("Variables", "Correlation Coefficient"),
+               caption = "Numeric Variables Correlated with Total Number of Streams")
+```
+Other than the obvious variable of `final_stream` (the total number of streams) and the non-musical element-related variable of `year`, this shows that the "danceability" of a song (represented in percentage) is the most correlated with total stream numbers (correlation coefficient of 0.15). 
+
+Thus, I decide to looks more closely at this variable through a univariate analysis:
 
 ```{r}
 spotify_data |> 
@@ -72,19 +93,21 @@ spotify_data |>
        x = "danceability in %",
        y = NULL)
 ```
-We can see that the distribution of danceability seems to have more or less a unimodal normal distribution. There might be a couple of song outliers below the 25% mark for danceability.
+We can see that the distribution of danceability seems to have more or less a unimodal normal distribution. There might be a couple of song outliers below the 25% mark for danceability, so I may ignore them for explorations going forward.
 
 Next, I decided to look at a bivariate analysis for a song's danceability and the total number of streams:
 ```{r}
 spotify_data |> 
   ggplot(aes(x = dance, y = final_streams)) +
-  geom_point(alpha = 0.5) +
+  geom_point(alpha = 0.6) +
   geom_jitter(width = 3, height = 2) +
   geom_smooth(method = "lm") +
   labs(title = "Total Number of Spotify Streams vs. Danceability",
        x = "dancebility (measured in %)",
        y = "total streams") +
-  scale_y_continuous(labels = scales::label_number())
+  scale_y_continuous(labels = scales::label_number()) +
+  coord_cartesian(y = c(0, 200000000),
+                  x = c(25, 100))
 ```
 We can see here that there is a relatively weak positive correlation between the total number of Spotify streams for a song and its danceability. Nonetheless, this means that songs that are more "danceable" tend to be played somewhat more often by Spotify users, and thus are more popular.
 
@@ -94,18 +117,20 @@ Lastly, I looked at a multivariate analysis of danceability, the total number of
 spotify_data |> 
   filter(!is.na(primary_genre)) |> 
   ggplot(aes(x = dance, y = final_streams)) +
-  geom_point(alpha = 0.5) +
+  geom_point(alpha = 0.2) +
   geom_jitter(width = 3, height = 2) +
-  geom_smooth(method = "lm") +
+  geom_smooth(method = "lm", se = FALSE) +
   facet_wrap(~ primary_genre, scales = "free") +
   scale_y_continuous(labels = scales::label_number()) +
   labs(title = "Total Number of Spotify Streams vs. Danceability For Each Genre",
        x = "dancebility (measured in %)",
-       y = "total streams")
+       y = "total streams") +
+  coord_cartesian(y = c(0, 200000000),
+                  x = c(25, 95))
 ```
 The relationship between danceability and total number of streams changes when we look at different genres. For Metal, country, folk, easy listening, and electronic, the relationship is negative, whereas for the other genres, the relationship is positive.
 
-**Categorical Variables:**
+**Looking at the most important categorical variable:**
 
 An important categorical variable I decided to explore when considering this research question was key signature. In particular, I decided to only focus on differentiating between major and minor keys to see if either feature would correlate with more streams. I did a bivariate analysis between a song's key signature and total number of streams to see if there are any noticeable patterns:
 
@@ -120,19 +145,114 @@ spotify_data |>
   scale_y_continuous(labels = scales::label_number()) +
   coord_cartesian(ylim = c(0, 400000000))
 ```
-It looks like..
+It looks like the medians for the total number of streams for songs in either major or minor keys seem to be around the same. However, the range and interquartile range is greater for songs that are in the minor key.
 
-Lastly, I did a 
+Then, I did a multivariate analysis for the major/ minor key signature, total number of streams, and genres:
 
-This is the heart or main body of the the report. The structure of this portion can look VERY different depending on narrative choices and organization choices made to guide readers through the project EDA. Could decide to make sections for major parts of the EDA and not used an Explorations header. The key is that you have sections that are clearly organized and guide the reader through a systematic and thoughtful exploration of the dataset(s).
+```{r}
+spotify_data |> 
+  filter(!is.na(primary_genre)) |> 
+  ggplot(aes(x = primary_genre)) +
+  geom_bar(aes(fill = major_minor)) +
+  facet_wrap(~ stream_breaks, scales = "free") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Songs in Major or Minor Keys For Each Genre",
+       subtitle = "Separated by number of streams",
+       y = NULL,
+       x = "Major or Minor Key")
+```
+As we can see here, 
 
-A thoughtful exploration weaves together prose, figures, and tables to help a reader build understanding. It is a guided tour that should have clear motivations for each step in the process (think guiding curiosities or research questions). It should be clear how things build of of each other and why we are looking at what is being presented. Should also be letting the reader know whether what is shown is as expected or is it surprising (maybe some of each).
+**Addressing the second research question I proposed: Are there trends and patterns in musical elements and song popularity that have changed over time?**
 
-You could imagine structuring this section around analysis type: univariate, bivariate, and multivariate. Can be a little harder to build a narrative with this structure. Could build sections that are dedicated to important variables: variable 1, variable 2, etc. In this case the sections would thoroughly explore the section’s variable through univariate, bivariate, and multivariate analyses. Alternatively, could build your sections around broad curiosities/research questions. Some of which probably inspired the project, and others that were developed through conducting the EDA.
+I decided to first look at the distribution of years for when songs are released:
 
+```{r}
+spotify_data |> 
+  ggplot(aes(x = year)) +
+  geom_bar() +
+  labs(title = "Distribution of Song Release Years",
+       x = "Year",
+       y = NULL)
+```
+We can see that the distirbution is left skewed and it seems like there are a lot of songs in this dataset from 2014, 2016, and 2017. There might be outliers at around 1980, so we might ignore this portion for the next couple of explorations.
 
+**Looking at the most important numeric variable:**
 
-##**Conclusion**
+To begin with I looked at the correlation coefficient between all the numeric variables and the song release year:
+
+```{r}
+spotify_numeric |> 
+  cor(use = "pairwise.complete.obs") |> 
+  as_tibble() |> 
+  select(year) |> 
+  mutate(variable = colnames(spotify_numeric), .before = year) |> 
+  arrange((year)) |> 
+  knitr::kable(digits = 2,
+               col.names = c("Variables", "Correlation Coefficient"),
+               caption = "Numeric Variables Correlated with Year")
+```
+We can see from the table that song duration (measure in seconds) is most closely correlated with the year in which a song is released (correlation coefficient of -0.43). 
+
+Thus, I decided to conduct a bivariate analysis between song duration and year:
+
+```{r}
+spotify_data |> 
+  ggplot(aes(x = year, y = song_seconds)) +
+  geom_point(alpha = 0.5) +
+  geom_jitter(width = 3, height = 1) +
+  geom_smooth(method = "lm") +
+  labs(title = "Song Duration vs. Year",
+       x = "Year",
+       y = "Song Duration (in seconds)")
+```
+As we can see...
+
+Next, let's look at a multivariate analysis between year, song duration, and total number of streams:
+
+```{r}
+spotify_data |> 
+  ggplot(aes(x = year, y = song_seconds, color = stream_breaks)) +
+  geom_point(alpha = 0.5) +
+  geom_jitter(width = 3, height = 1) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Song Duration vs. Year",
+       subtitle = "Categorized by total stream numbers",
+       x = "Year",
+       y = "Song Duration (in seconds)",
+       color = "Total Number of Streams")
+```
+As we can see...
+
+**Looking at the most important categorical variable:**
+
+An important categorical variable I decided to explore when considering this research question is genre. 
+
+```{r}
+spotify_data |> 
+  ggplot(aes(x = year)) +
+  geom_density(aes(fill = primary_genre), alpha = 0.5) +
+  labs(title = "Distribution of Songs Released Each Year By Genre",
+       x = "Year",
+       y = NULL, 
+       fill = "Genre")
+```
+As we can see...
+
+Next, let's look at a multivariate analysis between genre, year, and total number of streams:
+
+```{r}
+spotify_data |> 
+  ggplot(aes(x = year)) +
+  geom_density(aes(fill = primary_genre), alpha = 0.5) +
+  facet_wrap(~ stream_breaks, scales = "free") + 
+  labs(title = "Distribution of Songs Released Each Year By Genre",
+       subtitle = "Categorized by total stream numbers",
+       x = "Year",
+       y = NULL, 
+       fill = "Genre")
+```
+As we can see...
+
+##Conclusion
 State conclusions or insights. Were you surprised by things you found or were they as expected? Why? This is a great place for future work, new research questions, and next steps.
-
-
