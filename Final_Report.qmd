@@ -32,20 +32,20 @@ spotify_data <- read_rds("data/spotify_data_cleaned")
 
 :::
 
-##Introduction
+## Introduction
 
 I'm interested in looking at data on music to determine what musical elements make songs more popular and how these elements have changed over time. For this project, I gathered data from the music streaming-platform Spotify to look at some of the most popular songs among users and particular elements that might have made those songs popular. Some of the initial research questions I have are: What are the musical elements that make a song popular among listeners? Are there any patterns in changes and trends in these musical elements over the years?
 
 The `spotify_data_top` dataset I am using collected Spotify-made playlists that include between 50-130 tracks of the most popular songs each year from 1990-2022. There is information on each song's artist, album release date, genre, and other characteristics (i.e. BPM, key, and time signature). [This data was taken from Kaggle, courtesy of user KRISTOFFER.](https://www.kaggle.com/datasets/ztofff/top-1990-2022) The `spotify_streams` dataset I am using collected data on 10000 Spotify songs and information on their number of streams. [This data was taken from Kaggle, courtesy of user RAKKESH ARAVIND G.](https://www.kaggle.com/datasets/rakkesharv/spotify-top-10000-streamed-songs)
 
 
-##Data overview & quality
+## Data overview & quality
 
 `spotify_data_top` has 2610 observations and 26 variables. There are 12 categorical, 12 numeric, and 2 date and time-related variables. `spotify_streams` has 11084 rows and 9 variables. There are 3 categorical and 6 numeric variables.
 
 In terms of potential issues, both the datasets doesn't seem to have too many variables with a large number of missing values. However, many `genre` values seem to be missing though, which is something to keep in mind. The biggest issue that I ran into when trying to join the two datasets was in regards to the keys that I decided to join by. I wanted to join the two data sets by artist and song names, however, this became hard to do because the datasets seemed to have multiple versions of the same songs by the same artists. I was able to overcome this issue by filtering for distinct values and summing the total number of streams. In my data cleaning, I also did a couple of variable conversions so that the dataset would be easier to work with.
 
-##Explorations
+## Explorations
 
 **Addressing the first research question I proposed: What are the musical elements that make a song popular among listeners?**
 
@@ -254,5 +254,5 @@ spotify_data |>
 ```
 As we can see...
 
-##Conclusion
+## Conclusion
 State conclusions or insights. Were you surprised by things you found or were they as expected? Why? This is a great place for future work, new research questions, and next steps.
