@@ -161,7 +161,7 @@ spotify_data |>
        y = NULL,
        x = "Major or Minor Key")
 ```
-As we can see here, 
+As we can see here, the number of songs for each genre that are in either a major or minor key differs among different total stream numbers. Songs that have less than 250 million streams are typically in a major key. However, this kind of changes for songs that have less than 500 million streams as more hip hop songs in this category seem to be in the minor key. Lastly, when we look at songs that have less than 1 billion streams, we can see that for pop songs, more of them are in minor keys. However, for hip hop songs, more songs in this category seem to be in minor keys. Thus, there generally seems to be a pattern for songs in the hip hop and pop genres respectively. For the hip hop genre, songs that have more stream numbers seem to more likely be in major keys. For pop songs, on the other hand, songs that have more stream numbers seem to more likely be in minor keys.
 
 **Addressing the second research question I proposed: Are there trends and patterns in musical elements and song popularity that have changed over time?**
 
@@ -206,7 +206,7 @@ spotify_data |>
        x = "Year",
        y = "Song Duration (in seconds)")
 ```
-As we can see...
+The bivariate analysis supports the moderately strong, negative correlation between year and song duration. This shows that most songs, in general, have been getting shorter and shorter in length each year.
 
 Next, let's look at a multivariate analysis between year, song duration, and total number of streams:
 
@@ -222,7 +222,7 @@ spotify_data |>
        y = "Song Duration (in seconds)",
        color = "Total Number of Streams")
 ```
-As we can see...
+As we can see here, songs duration seems to have decreased over the years for all total stream numbers. This means that songs, in general, regardless of popularity, have been getting shorter and shorter.
 
 **Looking at the most important categorical variable:**
 
@@ -230,14 +230,15 @@ An important categorical variable I decided to explore when considering this res
 
 ```{r}
 spotify_data |> 
+  filter(!is.na(primary_genre)) |> 
   ggplot(aes(x = year)) +
-  geom_density(aes(fill = primary_genre), alpha = 0.5) +
+  geom_bar(aes(fill = primary_genre)) +
   labs(title = "Distribution of Songs Released Each Year By Genre",
        x = "Year",
        y = NULL, 
        fill = "Genre")
 ```
-As we can see...
+As we can see from the bar graph, pop songs seem to constitute a significant portion of the songs released each year. Notably, rock songs used to be released more often in the 90s - late 2010s, but seem to have become less common in the 2020s. Lastly, more songs in the Latin genre have been released in recent years.
 
 Next, let's look at a multivariate analysis between genre, year, and total number of streams:
 
@@ -252,7 +253,7 @@ spotify_data |>
        y = NULL, 
        fill = "Genre")
 ```
-As we can see...
+As we can see from the multivariate analysis, the distribution for song genres in each category of total stream numbers differs a lot. For the songs that have less than 250 million streams, songs in the Latin genre have mainly been released in recent years, and songs in the easy listening genre have been mainly released in the period around 2015. For songs that have less than 500 million streams, the distribution of songs in the pop and hip hop genres seem to peak around the 2017 period. Lastly, for songs that have less than 1 billion streams, the distribution of pop songs has stayed fairly constant throughout the late 90s - early 2020s period. However, the distribution for songs in the hip hop genre seems to peak around 2019. This multivariate analysis generally suggests that there has been a slight shift in the number of songs released from each genre throughout the years, changing from more Rock song releases to Latin and Hip Hop song releases.
 
 ## Conclusion
 State conclusions or insights. Were you surprised by things you found or were they as expected? Why? This is a great place for future work, new research questions, and next steps.
