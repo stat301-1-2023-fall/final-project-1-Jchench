@@ -25,44 +25,114 @@ from: markdown+emoji
 [My Repo Link](https://github.com/stat301-1-2023-fall/final-project-1-Jchench)
 
 ```{r}
-# Loading packages:
+# Loading packages and data:
 library(tidyverse)
-library(naniar)
+spotify_data <- read_rds("data/spotify_data_cleaned")
 ```
 
 :::
 
-**Introduction**
-Overview of the EDA. What was the motivation for this analysis? What initial curiosities or research questions motivated you? Describe the data source(s) you will use to build a predictive model. If you are obtaining information from websites you should cite those in your References.
+##Introduction
 
 I'm interested in looking at data on music to determine what musical elements make songs more popular and how these elements have changed over time. For this project, I gathered data from the music streaming-platform Spotify to look at some of the most popular songs among users and particular elements that might have made those songs popular. Some of the initial research questions I have are: What are the musical elements that make a song popular among listeners? Are there any patterns in changes and trends in these musical elements over the years?
 
 The `spotify_data_top` dataset I am using collected Spotify-made playlists that include between 50-130 tracks of the most popular songs each year from 1990-2022. There is information on each song's artist, album release date, genre, and other characteristics (i.e. BPM, key, and time signature). [This data was taken from Kaggle, courtesy of user KRISTOFFER.](https://www.kaggle.com/datasets/ztofff/top-1990-2022) The `spotify_streams` dataset I am using collected data on 10000 Spotify songs and information on their number of streams. [This data was taken from Kaggle, courtesy of user RAKKESH ARAVIND G.](https://www.kaggle.com/datasets/rakkesharv/spotify-top-10000-streamed-songs)
 
 
-##**Data overview & quality**
-A concise high level overview of the dataset(s) being explored. Description of the dataset(s) that covers basics: size, number of observations, number, of variables, variable types, and discussion of any quality issues (especially missingness and how it may impact the analysis). Highlight any important data collection issues or concerns. If over-technical, but important, then place technical details in Appendix: technical info.
+##Data overview & quality
 
 `spotify_data_top` has 2610 observations and 26 variables. There are 12 categorical, 12 numeric, and 2 date and time-related variables. `spotify_streams` has 11084 rows and 9 variables. There are 3 categorical and 6 numeric variables.
 
-In terms of potential issues, both the datasets doesn't seem to have too many variables with a large number of missing values. However, many `genre` values seem to be missing though, which is something to keep in mind. The biggest issue that I ran into when trying to join the two datasets was in regards to the keys that I decided to join by. I wanted to join the two data sets by artist and song names, however, this became hard to do because the datasets seemed to have multiple versions of the same songs by the same artists ^[].
+In terms of potential issues, both the datasets doesn't seem to have too many variables with a large number of missing values. However, many `genre` values seem to be missing though, which is something to keep in mind. The biggest issue that I ran into when trying to join the two datasets was in regards to the keys that I decided to join by. I wanted to join the two data sets by artist and song names, however, this became hard to do because the datasets seemed to have multiple versions of the same songs by the same artists. I was able to overcome this issue by filtering for distinct values and summing the total number of streams.
 
-##**Explorations**
+##Explorations
+
+**Addressing the first research question I proposed: What are the musical elements that make a song popular among listeners?**
+
+I decided to define "popularity" of songs based on how many total streams a song garnered on Spotify. Here is the distribution for this variable:
+
+```{r}
+spotify_data |> 
+  ggplot(aes(x = final_streams)) +
+  geom_histogram() +
+  labs(title = "Distribution of the total number of streams for songs",
+       x = "total number of streams",
+       y = NULL) +
+  scale_x_continuous(labels = scales::label_number())
+```
+As we can see here, the distribution of the total number of streams is unimodal and significantly skewed to the right, meaning that most of the songs in this dataset have less than 100 million total streams.
+
+To begin with I looked at the correlation coefficient between all the numeric variables and the total number of streams, which showed that the "danceability" of a song (represented in percentage) is the most correlated with total stream numbers (correlation coefficient of 0.31). Thus, I decide to looks more closely at this variable through a univariate analysis:
+
+```{r}
+spotify_data |> 
+  ggplot(aes(x = dance)) +
+  geom_histogram(bins = 40) +
+  labs(title = "Distribution of danceability for songs",
+       x = "danceability in %",
+       y = NULL)
+```
+We can see that the distribution of danceability seems to have more or less a unimodal normal distribution. There might be a couple of song outliers below the 25% mark for danceability.
+
+Next, I decided to look at a bivariate analysis for a song's danceability and the total number of streams:
+```{r}
+spotify_data |> 
+  ggplot(aes(x = dance, y = final_streams)) +
+  geom_point(alpha = 0.5) +
+  geom_jitter(width = 3, height = 2) +
+  geom_smooth(method = "lm") +
+  labs(title = "Total Number of Spotify Streams vs. Danceability",
+       x = "dancebility (measured in %)",
+       y = "total streams") +
+  scale_y_continuous(labels = scales::label_number())
+```
+We can see here that there is a relatively weak positive correlation between the total number of Spotify streams for a song and its danceability. Nonetheless, this means that songs that are more "danceable" tend to be played somewhat more often by Spotify users, and thus are more popular.
+
+Lastly, I looked at a multivariate analysis of danceability, the total number of streams, and genre:
+
+```{r}
+spotify_data |> 
+  filter(!is.na(primary_genre)) |> 
+  ggplot(aes(x = dance, y = final_streams)) +
+  geom_point(alpha = 0.5) +
+  geom_jitter(width = 3, height = 2) +
+  geom_smooth(method = "lm") +
+  facet_wrap(~ primary_genre, scales = "free") +
+  scale_y_continuous(labels = scales::label_number()) +
+  labs(title = "Total Number of Spotify Streams vs. Danceability For Each Genre",
+       x = "dancebility (measured in %)",
+       y = "total streams")
+```
+The relationship between danceability and total number of streams changes when we look at different genres. For Metal, country, folk, easy listening, and electronic, the relationship is negative, whereas for the other genres, the relationship is positive.
+
+**Categorical Variables:**
+
+An important categorical variable I decided to explore when considering this research question was key signature. In particular, I decided to only focus on differentiating between major and minor keys to see if either feature would correlate with more streams. I did a bivariate analysis between a song's key signature and total number of streams to see if there are any noticeable patterns:
+
+```{r}
+spotify_data |> 
+  ggplot(aes(x = major_minor, y = final_streams)) +
+  geom_boxplot() +
+  labs(title = "Distribution of the Total Number of Streams by Key",
+       subtitle = "For Songs in a Major Key vs. Minor Key",
+       x = "Major or Minor",
+       y = "Total number of streams") +
+  scale_y_continuous(labels = scales::label_number()) +
+  coord_cartesian(ylim = c(0, 400000000))
+```
+It looks like..
+
+Lastly, I did a 
+
 This is the heart or main body of the the report. The structure of this portion can look VERY different depending on narrative choices and organization choices made to guide readers through the project EDA. Could decide to make sections for major parts of the EDA and not used an Explorations header. The key is that you have sections that are clearly organized and guide the reader through a systematic and thoughtful exploration of the dataset(s).
 
 A thoughtful exploration weaves together prose, figures, and tables to help a reader build understanding. It is a guided tour that should have clear motivations for each step in the process (think guiding curiosities or research questions). It should be clear how things build of of each other and why we are looking at what is being presented. Should also be letting the reader know whether what is shown is as expected or is it surprising (maybe some of each).
 
 You could imagine structuring this section around analysis type: univariate, bivariate, and multivariate. Can be a little harder to build a narrative with this structure. Could build sections that are dedicated to important variables: variable 1, variable 2, etc. In this case the sections would thoroughly explore the section’s variable through univariate, bivariate, and multivariate analyses. Alternatively, could build your sections around broad curiosities/research questions. Some of which probably inspired the project, and others that were developed through conducting the EDA.
 
-Conclusion
+
+
+##**Conclusion**
 State conclusions or insights. Were you surprised by things you found or were they as expected? Why? This is a great place for future work, new research questions, and next steps.
 
-References — if needed
-Any references used should be sited here. This includes but is not limited to where you got your data. There is no “formal” reference guideline but we recommend APA format. Example: Lastname, F. M. (Year, Month Date). Title of page. Site name. URL
-
-Appendix: technical info — if needed
-A place to share complex and important technical steps that may highly impact explorations, but the details are too technical to share in main body of the report.
-
-Appendix: extra explorations — if needed
-Useful in cases where there are an over-abundance of explorations and they are not useful in the main body of the report or they are uninteresting, but still think readers should have access to them for reference.
 
