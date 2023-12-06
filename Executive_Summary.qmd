@@ -1,0 +1,15 @@
+---
+title: "Executive Summary"
+author: "Jessie Chen"
+format: html
+editor: visual
+---
+
+## Research Purpose:
+  For this project, I wanted to look at data regarding songs on the popular streaming platform Spotify. Some of the main research questions I had while looking at this data are: What are the musical elements that make a song popular among listeners? Are there trends and patterns in musical elements and song popularity that have changed over time? To answer these questions I decided to look at stream numbers (the amount of times a song is played) as a measure of popularity and song release years as a measure of time. For my explanatory variables, I decided to look at "danceability" (percentage indicating how suitable a song is for dancing), major/ minor key signature, song genre, and song duration (measured in seconds).
+
+## Major Findings:
+  One of my major findings after doing some exploratory data analysis was that danceability is positively correlated with total number of streams for a song. This means that songs that are generally more suitable for dancing tend to be a bit more popular and played more often. Another major finding was that relationship between danceability and the total number of streams for a song actually changes depending on which genre the song is from. This means that listeners also might have expectations for how danceable a song is depending on what genre they are listening to. For example, the most popular songs that are in the Folk, Country, and Easy listening genres tend to be less suitable for dancing. I also found that songs in the minor key generally have a greater number of total stream numbers. However this changes slightly when looking at songs from different genres. In particular, songs in the Hip Hop genre that have more streams seem to more likely be in major keys while songs in the Pop genre with more stream numbers seem to be in minor keys. A major finding that addressed my research question regarding patterns and trends of music over time is that I noticed song duration has been getting shorter over the years. Both my bivariate multivariate analyses in the final report show that there is a negative correlation between song length and song release year across all genres. In terms of looking at song genre over the years, my main finding was that more songs in the Latin genre have been released recently. However, the songs that have the highest total number of streams are still in either the Pop or Hip Hop genre.
+
+## Conclusions:
+  In conclusion, my exploratory data analysis shows that the danceability of a song and whether it is in a major or minor key are the most influential factors when looking at elements that make a song popular. However, the relationship between danceability and stream numbers can differ largely when looking at different genres. My results also indicate that songs have been getting shorter across the years (which is true regardless of song genre), and a larger proportion of songs in the Latin genre have been released in recent years.

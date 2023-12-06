@@ -1,7 +1,7 @@
 ---
-title: "Final Report"
+title: "Exploring Data Songs in Spotify"
 subtitle: |
-  | Final Project 
+  | Final Project Report
   | Data Science 1 with R (STAT 301-1)
 author: Jessie Chen
 date: today
@@ -28,13 +28,14 @@ from: markdown+emoji
 # Loading packages and data:
 library(tidyverse)
 spotify_data <- read_rds("data/spotify_data_cleaned")
+spotify_data_codebook <- read_csv("data/spotify_data_codebook.csv")
 ```
 
 :::
 
 ## Introduction
 
-I'm interested in looking at data on music to determine what musical elements make songs more popular and how these elements have changed over time. For this project, I gathered data from the music streaming-platform Spotify to look at some of the most popular songs among users and particular elements that might have made those songs popular. Some of the initial research questions I have are: What are the musical elements that make a song popular among listeners? Are there any patterns in changes and trends in these musical elements over the years?
+I'm interested in looking at data on music to determine what musical elements make songs more popular and how these elements have changed over time. For this project, I gathered data from the music streaming-platform Spotify to look at some of the most popular songs among users and particular elements that might have made those songs popular. Some of the initial research questions I have are: What are the musical elements that make a song popular among listeners? Are there trends and patterns in musical elements and song popularity that have changed over time?
 
 The `spotify_data_top` dataset I am using collected Spotify-made playlists that include between 50-130 tracks of the most popular songs each year from 1990-2022. There is information on each song's artist, album release date, genre, and other characteristics (i.e. BPM, key, and time signature). [This data was taken from Kaggle, courtesy of user KRISTOFFER.](https://www.kaggle.com/datasets/ztofff/top-1990-2022) The `spotify_streams` dataset I am using collected data on 10000 Spotify songs and information on their number of streams. [This data was taken from Kaggle, courtesy of user RAKKESH ARAVIND G.](https://www.kaggle.com/datasets/rakkesharv/spotify-top-10000-streamed-songs)
 
@@ -256,7 +257,7 @@ spotify_data |>
 ```
 As we can see from the multivariate analysis, the distribution for song genres in each category of total stream numbers differs a lot. For the songs that have less than 250 million streams, songs in the Latin genre have mainly been released in recent years, and songs in the easy listening genre have been mainly released in the period around 2015. For songs that have less than 500 million streams, the distribution of songs in the pop and hip hop genres seem to peak around the 2017 period. Lastly, for songs that have less than 1 billion streams, the distribution of pop songs has stayed fairly constant throughout the late 90s - early 2020s period. However, the distribution for songs in the hip hop genre seems to peak around 2019. This multivariate analysis generally suggests that there has been a slight shift in the number of songs released from each genre throughout the years, changing from more Rock song releases to Latin and Hip Hop song releases. The most popular songs also seem to only come from a couple of genres such as hip hop and pop.
 
-## Conclusion:
+## Conclusion
 
 Here are song of the main insights and conclusions that I have generated for my research questions based on my exploratory data analysis:
 
@@ -267,5 +268,13 @@ I found that danceability and key signature (in major or minor) are important el
 **Are there trends and patterns in musical elements and song popularity that have changed over time?**
 
 I found that song duration (in seconds) has seemed to decreased over the years, and this is mostly true for songs of any number of total streams. I kind of expected this finding because do feel like media content in general has gotten shorter and shorter recently due to development in social media and other technologies. I was a little bit more surprised when looking at the genres of song releases each year as I didn't really expect the number of songs in the Latin category to have increased in these past few years. I did expect hip hop and pop music genres to constitute most of the song releases, since I did notice that a large number of the songs in this dataset fall under these categories.
+
+## References
+
+**Data from:**
+
+G, Rakkesh Aravind. “Spotify Top 10000 Streamed Songs.” Kaggle, 2 Jan. 2023, www.kaggle.com/datasets/rakkesharv/spotify-top-10000-streamed-songs. 
+
+Kristoffer. “Spotify Top Tracks 1990-2022.” Kaggle, 27 Aug. 2023, www.kaggle.com/datasets/ztofff/top-1990-2022. 
 
 
