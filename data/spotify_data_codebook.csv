@@ -1,0 +1,28 @@
+Variable,Description
+song_name,Name of the song
+artist_name,Name of the song’s artist
+bpm,"Beats per minute, a measure of song tempo"
+genres,All genres used to describe the song
+parent_genre,Broader categories that the song’s genres fall under
+album,Album name
+album_date,Album release date
+time,Song duration in minutes
+dance,Percentage indicating how suitable the song is for dancing
+energy,Perceived energy level of the song
+acoustic,Percentage indicating how much of the song is acoustic
+instrumental,Percentage indicating how much of the song is instrumental
+happy,Perceived happiness level of the song
+speech,Percentage of spoken words in the song
+live,Percentage indicating the presence of live performance elements
+loud,Loudness measured in decibles
+key,Key signature
+time_signature,Time signature
+added_at,Date the song was added to the dataset by the original author
+album_label,Record label that produced the song
+camelot,Camelot circle of fifths for key signatures
+final_streams,Total number of streams
+primary genre,The first genre that shows up for parent genre
+year,The year the song was released in
+song_seconds,Duration of the song in seconds
+stream_breaks,Total stream numbers broken down into three intervals
+major_minor,Is the song in a major or minor key
