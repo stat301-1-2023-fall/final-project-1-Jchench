@@ -35,20 +35,25 @@ spotify_data_codebook <- read_csv("data/spotify_data_codebook.csv")
 
 ## Introduction
 
-I'm interested in looking at data on music to determine what musical elements make songs more popular and how these elements have changed over time. For this project, I gathered data from the music streaming-platform Spotify to look at some of the most popular songs among users and particular elements that might have made those songs popular. Some of the initial research questions I have are: What are the musical elements that make a song popular among listeners? Are there trends and patterns in musical elements and song popularity that have changed over time?
+I'm interested in looking at data on songs to determine what musical elements make certain songs more popular and how these elements have changed over time. For this project, I gathered data from the music streaming platform Spotify to look at some of the most popular songs among users and particular elements that might have made those songs popular. Some of the initial research questions I have are: What are the musical elements that make a song popular among listeners? And are there trends and patterns in musical elements and song popularity that have changed over time?
 
-The `spotify_data_top` dataset I am using collected Spotify-made playlists that include between 50-130 tracks of the most popular songs each year from 1990-2022. There is information on each song's artist, album release date, genre, and other characteristics (i.e. BPM, key, and time signature). [This data was taken from Kaggle, courtesy of user KRISTOFFER.](https://www.kaggle.com/datasets/ztofff/top-1990-2022) The `spotify_streams` dataset I am using collected data on 10000 Spotify songs and information on their number of streams. [This data was taken from Kaggle, courtesy of user RAKKESH ARAVIND G.](https://www.kaggle.com/datasets/rakkesharv/spotify-top-10000-streamed-songs)
+For this project, I took data from two datasets, which I then cleaned and joined.
+
+The first dataset I am using is the `spotify_data_top` dataset, which collected Spotify-made playlists that include between 50-130 tracks of the most popular songs each year from 1990-2022. There is information on each song's artist, album release date, genre, and other characteristics (i.e. BPM, key, and time signature). [This data was taken from Kaggle, courtesy of user KRISTOFFER.](https://www.kaggle.com/datasets/ztofff/top-1990-2022) 
+
+The second dataset I used was the `spotify_streams` dataset, which collected information on 10000 songs and their number of streams (a measure of how many times a song is played on Spotify). [This data was taken from Kaggle, courtesy of user RAKKESH ARAVIND G.](https://www.kaggle.com/datasets/rakkesharv/spotify-top-10000-streamed-songs)
 
 
 ## Data overview & quality
 
 `spotify_data_top` has 2610 observations and 26 variables. There are 12 categorical, 12 numeric, and 2 date and time-related variables. `spotify_streams` has 11084 rows and 9 variables. There are 3 categorical and 6 numeric variables.
 
-In terms of potential issues, both the datasets doesn't seem to have too many variables with a large number of missing values. However, many `genre` values seem to be missing though, which is something to keep in mind. The biggest issue that I ran into when trying to join the two datasets was in regards to the keys that I decided to join by. I wanted to join the two data sets by artist and song names, however, this became hard to do because the datasets seemed to have multiple versions of the same songs by the same artists. I was able to overcome this issue by filtering for distinct values and summing the total number of streams. In my data cleaning, I also did a couple of variable conversions so that the dataset would be easier to work with.
+In terms of potential issues, both the datasets don't seem to have too many variables with a large number of missing values. The biggest issue that I ran into when trying to join the two datasets was in regards to the keys that I decided to join by. I wanted to join the two data sets by artist and song names, however, this became hard to do because the datasets seemed to have multiple versions of the same songs by the same artists. I was able to overcome this issue by filtering for distinct values and summing the total number of streams. In my data cleaning, I also did a couple of variable conversions so that the dataset would be easier to work with.
 
 ## Explorations
 
-**Addressing the first research question I proposed: What are the musical elements that make a song popular among listeners?**
+## Addressing the first research question I proposed:
+**What are the musical elements that make a song popular among listeners?**
 
 I decided to define "popularity" of songs based on how many total streams a song garnered on Spotify. Here is the distribution for this variable:
 
@@ -65,7 +70,7 @@ As we can see here, the distribution of the total number of streams is unimodal 
 
 **Looking at the most important numeric variable:**
 
-To begin with I looked at the correlation coefficient between all the numeric variables and the total number of streams:
+To begin with, I looked at the correlation coefficient between all the numeric variables and the total number of streams:
 
 ```{r}
 spotify_numeric <- 
@@ -82,7 +87,7 @@ spotify_numeric |>
                col.names = c("Variables", "Correlation Coefficient"),
                caption = "Numeric Variables Correlated with Total Number of Streams")
 ```
-Other than the obvious variable of `final_stream` (the total number of streams) and the non-musical element-related variable of `year`, this shows that the "danceability" of a song (represented in percentage) is the most correlated with total stream numbers (correlation coefficient of 0.15). 
+Other than the non-musical element-related variable of "year" (which represents the year a song is released in), this table shows that the "danceability" of a song (measured in percentage) is the most correlated with total stream numbers (correlation coefficient of 0.15). 
 
 Thus, I decide to looks more closely at this variable through a univariate analysis:
 
@@ -94,7 +99,7 @@ spotify_data |>
        x = "danceability in %",
        y = NULL)
 ```
-We can see that the distribution of danceability seems to have more or less a unimodal normal distribution. There might be a couple of song outliers below the 25% mark for danceability, so I may ignore them for explorations going forward.
+We can see that the distribution of danceability seems to have more or less a unimodal, normal distribution. There might be a couple of song outliers below the 25% mark for danceability, so I may ignore them for explorations going forward.
 
 Next, I decided to look at a bivariate analysis for a song's danceability and the total number of streams:
 ```{r}
@@ -110,7 +115,7 @@ spotify_data |>
   coord_cartesian(y = c(0, 200000000),
                   x = c(25, 100))
 ```
-We can see here that there is a relatively weak positive correlation between the total number of Spotify streams for a song and its danceability. Nonetheless, this means that songs that are more "danceable" tend to be played somewhat more often by Spotify users, and thus are more popular.
+We can see here that there is a moderately positive correlation between the total number of streams for a song and its danceability. This means that songs that are more suitable for dancing tend to be played somewhat more often by Spotify users, and thus are more popular.
 
 Lastly, I looked at a multivariate analysis of danceability, the total number of streams, and genre:
 
@@ -123,13 +128,14 @@ spotify_data |>
   geom_smooth(method = "lm", se = FALSE) +
   facet_wrap(~ primary_genre, scales = "free") +
   scale_y_continuous(labels = scales::label_number()) +
-  labs(title = "Total Number of Spotify Streams vs. Danceability For Each Genre",
+  labs(title = "Total Number of Spotify Streams vs. Danceability",
+       subtitle = "Separated by genre",
        x = "dancebility (measured in %)",
        y = "total streams") +
   coord_cartesian(y = c(0, 200000000),
                   x = c(25, 95))
 ```
-The relationship between danceability and total number of streams changes when we look at different genres. For Metal, country, folk, easy listening, and electronic, the relationship is negative, whereas for all the other genres, the relationship is positive. This means that listeners have different preferences for how "danceable" a song is depending on what genre they are listening to.
+The relationship between danceability and total number of streams changes when we look at different genres. For genres like Metal, Country, Folk, Easy listening, and Electronic, the relationship is negative, whereas for all the other genres, the relationship is positive. This means that listeners have different preferences for how "danceable" a song is depending on what genre they are listening to.
 
 **Looking at the most important categorical variable:**
 
@@ -148,7 +154,7 @@ spotify_data |>
 ```
 It looks like the medians for the total number of streams for songs in either major or minor keys seem to be around the same. However, the range and interquartile range is greater for songs that are in the minor key. This means that songs in the minor key have a greater change of garnering more stream numbers.
 
-Then, I did a multivariate analysis for the major/ minor key signature, total number of streams, and genres:
+Then, I did a multivariate analysis for the major or minor key signature, total number of streams, and genres:
 
 ```{r}
 spotify_data |> 
@@ -157,14 +163,15 @@ spotify_data |>
   geom_bar(aes(fill = major_minor)) +
   facet_wrap(~ stream_breaks, scales = "free") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(title = "Songs in Major or Minor Keys For Each Genre",
+  labs(title = "Songs in a Major or Minor Key For Each Genre",
        subtitle = "Separated by number of streams",
        y = NULL,
        x = "Major or Minor Key")
 ```
-As we can see here, the number of songs for each genre that are in either a major or minor key differs among different total stream numbers. Songs that have less than 250 million streams are typically in a major key. However, this kind of changes for songs that have less than 500 million streams as more hip hop songs in this category seem to be in the minor key. Lastly, when we look at songs that have less than 1 billion streams, we can see that for pop songs, more of them are in minor keys. However, for hip hop songs, more songs in this category seem to be in minor keys. Thus, there generally seems to be a pattern for songs in the hip hop and pop genres respectively. For the hip hop genre, songs that have more stream numbers seem to more likely be in major keys. For pop songs, on the other hand, songs that have more stream numbers seem to more likely be in minor keys.
+As we can see here, the number of songs for each genre that are in either a major or minor key differs among different total stream numbers. Songs that have less than 250 million streams are typically in a major key. However, this kind of changes for songs that have less than 500 million streams as more Hip Hop songs in this category seem to be in the minor key. Lastly, when we look at songs that have less than 1 billion streams, we can see that for Pop songs, more of them are in a minor key. However, for Hip Hop songs, more songs in this category seem to be in a major key. Thus, there generally seems to be a pattern for songs in the Hip Hop and Pop genres respectively. For the Hip Hop genre, songs that have more stream numbers seem to more likely be in a major key. For Pop songs, on the other hand, songs that have more stream numbers seem to more likely be in a minor key.
 
-**Addressing the second research question I proposed: Are there trends and patterns in musical elements and song popularity that have changed over time?**
+## Addressing the second research question I proposed:
+**Are there trends and patterns in musical elements and song popularity that have changed over time?**
 
 I decided to first look at the distribution of years for when songs are released:
 
@@ -239,7 +246,7 @@ spotify_data |>
        y = NULL, 
        fill = "Genre")
 ```
-As we can see from the bar graph, pop songs seem to constitute a significant portion of the songs released each year. Notably, rock songs used to be released more often in the 90s - late 2010s, but seem to have become less common in the 2020s. Lastly, more songs in the Latin genre have been released in recent years.
+As we can see from the bar graph, pop songs seem to constitute a significant portion of the songs released each year. Notably, Rock songs used to be released more often in the 90s - late 2010s, but seem to have become less common in the 2020s. Additionally, more songs in the Latin genre have been released in recent years.
 
 Next, let's look at a multivariate analysis between genre, year, and total number of streams:
 
@@ -255,7 +262,7 @@ spotify_data |>
        y = NULL, 
        fill = "Genre")
 ```
-As we can see from the multivariate analysis, the distribution for song genres in each category of total stream numbers differs a lot. For the songs that have less than 250 million streams, songs in the Latin genre have mainly been released in recent years, and songs in the easy listening genre have been mainly released in the period around 2015. For songs that have less than 500 million streams, the distribution of songs in the pop and hip hop genres seem to peak around the 2017 period. Lastly, for songs that have less than 1 billion streams, the distribution of pop songs has stayed fairly constant throughout the late 90s - early 2020s period. However, the distribution for songs in the hip hop genre seems to peak around 2019. This multivariate analysis generally suggests that there has been a slight shift in the number of songs released from each genre throughout the years, changing from more Rock song releases to Latin and Hip Hop song releases. The most popular songs also seem to only come from a couple of genres such as hip hop and pop.
+As we can see from the multivariate analysis, the distribution for song genres in each category of total stream numbers differs a lot. For the songs that have less than 250 million streams, songs in the Latin genre have mainly been released in recent years, and songs in the Easy listening genre have been mainly released in the period around 2015. For songs that have less than 500 million streams, the distribution of songs in the Pop and Hip Hop genres seem to peak around the 2017 period. Lastly, for songs that have less than 1 billion streams, the distribution of pop songs has stayed fairly constant throughout the late 90s - early 2020s period. However, the distribution for songs in the hip hop genre seems to peak around 2019. This multivariate analysis generally suggests that there has been a slight shift in the number of songs released from each genre throughout the years, changing from more Rock song releases to Latin and Hip Hop song releases. The most popular songs also seem to only come from a couple of genres such as Hip Hop and Pop.
 
 ## Conclusion
 
@@ -263,11 +270,11 @@ Here are song of the main insights and conclusions that I have generated for my 
 
 **What are the musical elements that make a song popular among listeners?**
 
-I found that danceability and key signature (in major or minor) are important elements that might influence whether or not a song is popular among listeners. Although danceability and the total number of streams a song garners is mostly positive (the more "danceable" a song is, the more times it is played), the relationship between danceability and total number of streams changes when we look at different genres. For example, in the metal, country, folk, easy listening, and electronic genres, the relationship is negative. This means that listeners have different preferences for how "danceable" a song is depending on what genre they are listening to. In terms of key signature, I found that generally songs in the minor key have a greater possibility of having more total stream numbers. However this changes slightly when looking at songs from different genres. In particular, songs in the hip hop genre that have more stream numbers seem to more likely be in major keys and pop songs, on the other hand, that have more stream numbers seem to more likely be in minor keys.
+I found that danceability and key signature (in major or minor) are important elements that might influence whether or not a song is popular among listeners. Although danceability and the total number of streams a song garners is mostly positive (the more "danceable" a song is, the more times it is played), the relationship between danceability and total number of streams changes when we look at different genres. This means that listeners have different preferences for how "danceable" a song is depending on what genre they are listening to. In terms of key signature, I found that generally songs in the minor key have a greater possibility of having more total stream numbers. However this changes slightly when looking at songs from different genres. In particular, songs in the Hip Hop genre that have more stream numbers seem to mostly be in a major key and Pop songs that have more stream numbers seem to more likely be in a minor key.
 
 **Are there trends and patterns in musical elements and song popularity that have changed over time?**
 
-I found that song duration (in seconds) has seemed to decreased over the years, and this is mostly true for songs of any number of total streams. I kind of expected this finding because do feel like media content in general has gotten shorter and shorter recently due to development in social media and other technologies. I was a little bit more surprised when looking at the genres of song releases each year as I didn't really expect the number of songs in the Latin category to have increased in these past few years. I did expect hip hop and pop music genres to constitute most of the song releases, since I did notice that a large number of the songs in this dataset fall under these categories.
+I found that song duration (in seconds) has seemed to decreased over the years, and this is mostly true for songs of any number of total streams. I kind of expected this finding because do feel like media content in general has gotten shorter recently due to developments in social media and other technologies. I was a little bit more surprised when looking at the genres of song releases each year as I didn't really expect the number of song releases in the Latin category to have increased in these past few years. I did expect Hip Hop and Pop music genres to constitute most of the song releases, since I did notice that a large number of the songs in this dataset fall under these categories.
 
 ## References
 
